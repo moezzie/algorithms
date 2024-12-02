@@ -19,7 +19,6 @@ func TestExamplePart1(t *testing.T) {
 		totalDistance += int(math.Abs(float64(lists[0][n] - lists[1][n])))
 	}
 
-	fmt.Println("Total difference ", totalDistance)
 	if totalDistance != 11 {
 		t.Fatalf("Expected 11, got %d", totalDistance)
 	}
@@ -42,21 +41,8 @@ func TestExamplePart2(t *testing.T) {
 	lists := [][]int{{3, 4, 2, 1, 3, 3}, {4, 3, 5, 3, 9, 3}}
 	lists = sortLists(lists)
 
-	var similarityScore int
-	var occurrences int
-	var current int
-	for n := 0; n < len(lists[0]); n++ {
-		occurrences = 0
-		current = lists[0][n]
-		for i := 0; i < len(lists[1]); i++ {
-			if current == lists[1][i] {
-				occurrences++
-			}
-		}
-		similarityScore += occurrences * current
-	}
+	similarityScore := calculateSimilarityScore(lists)
 
-	fmt.Println("Similarity score ", similarityScore)
 	if similarityScore != 31 {
 		t.Fatalf("Expected 31, got %d", similarityScore)
 	}
@@ -70,9 +56,6 @@ func TestPart2(t *testing.T) {
 	similarityScore := calculateSimilarityScore(lists)
 
 	fmt.Println("Similarity score ", similarityScore)
-	if similarityScore != 31 {
-		t.Fatalf("Expected 31, got %d", similarityScore)
-	}
 }
 
 func readInputFile(filePath string) []string {
@@ -115,17 +98,14 @@ func sortLists(lists [][]int) [][]int {
 
 func calculateSimilarityScore(lists [][]int) int {
 	var similarityScore int
-	var occurrences int
 	var current int
 	for n := 0; n < len(lists[0]); n++ {
-		occurrences = 0
 		current = lists[0][n]
 		for i := 0; i < len(lists[1]); i++ {
 			if current == lists[1][i] {
-				occurrences++
+				similarityScore += current
 			}
 		}
-		similarityScore += occurrences * current
 	}
 
 	return similarityScore
