@@ -50,7 +50,7 @@ func paintCluster(points []DataPoint, start int, maxDistance float64, minSamples
 		currentStackPos++
 
 		// Make sure we have not visited this point before
-		for n := 0; n < len(visited); n++ {
+		for n := 0; n < visitedPos; n++ {
 			if visited[n] == currentPointIdx {
 				goto CONTINUE_LABEL
 			}
