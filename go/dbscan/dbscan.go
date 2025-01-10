@@ -44,14 +44,12 @@ func paintCluster(points []DataPoint, start int, maxDistance float64, minSamples
 	var currentPointIdx int
 
 	visited := make([]int, len(points))
+	visitedPos := 0
 
-	for stack[currentStackPos] > -1 || currentStackPos < len(stack) {
+	for currentStackPos > -1 && stack[currentStackPos] > -1 && currentStackPos < len(stack) {
 
 	CONTINUE_LABEL:
 		currentPointIdx = stack[currentStackPos]
-		if currentPointIdx == -1 {
-			break
-		}
 		currentStackPos++
 
 		// Make sure we have not visited this point before
@@ -60,7 +58,8 @@ func paintCluster(points []DataPoint, start int, maxDistance float64, minSamples
 				goto CONTINUE_LABEL
 			}
 		}
-		visited = append(visited, currentPointIdx)
+		visited[visitedPos] = currentPointIdx
+		visitedPos++
 
 		// Holds the indexes of all close neighbouring points
 		closePoints = make([]int, 0)
@@ -106,5 +105,5 @@ func paintCluster(points []DataPoint, start int, maxDistance float64, minSamples
 
 // Calculates the distance between 2 points in 2d space
 func distance(point1, point2 DataPoint) float64 {
-	return float64(math.Abs(math.Sqrt(math.Pow(float64(point2[Y]-point1[Y]), 2) + math.Pow(float64(point2[X]-point1[X]), 2))))
+	return math.Abs(math.Sqrt(math.Pow(point2[Y]-point1[Y], 2) + math.Pow(point2[X]-point1[X], 2)))
 }

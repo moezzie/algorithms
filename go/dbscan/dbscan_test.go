@@ -65,9 +65,9 @@ func getData(name string) ([]DataPoint, error) {
 
 	points := make([]DataPoint, len(rows))
 
-	var x float64
-	var y float64
-	var category float64
+	x := 0.0
+	y := 0.0
+	category := 0.0
 	for idx, row := range rows {
 		if row == "" {
 			continue
