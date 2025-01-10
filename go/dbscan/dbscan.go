@@ -32,7 +32,6 @@ func DBScan(dataPoints []DataPoint, maxDistance float64, minSamples int) []DataP
 
 func paintCluster(points []DataPoint, start int, maxDistance float64, minSamples int, clusterId float64) []DataPoint {
 	stack := make([]int, len(points))
-
 	stack[0] = start
 	currentStackPos := 0
 	nextStackElementPos := 1
@@ -41,7 +40,7 @@ func paintCluster(points []DataPoint, start int, maxDistance float64, minSamples
 	var currentPointIdx int
 
 	visited := make([]int, len(points))
-	visitedPos := 0
+	visitedInsertPos := 0
 
 	for currentStackPos < nextStackElementPos {
 
@@ -50,13 +49,13 @@ func paintCluster(points []DataPoint, start int, maxDistance float64, minSamples
 		currentStackPos++
 
 		// Make sure we have not visited this point before
-		for n := 0; n < visitedPos; n++ {
+		for n := 0; n < visitedInsertPos; n++ {
 			if visited[n] == currentPointIdx {
 				goto CONTINUE_LABEL
 			}
 		}
-		visited[visitedPos] = currentPointIdx
-		visitedPos++
+		visited[visitedInsertPos] = currentPointIdx
+		visitedInsertPos++
 
 		// Holds the indexes of all close neighbouring points
 		closePoints = make([]int, 0)
@@ -64,12 +63,8 @@ func paintCluster(points []DataPoint, start int, maxDistance float64, minSamples
 		for n, neighbour := range points {
 
 			// Avoid nodes that already have a category set
-			if neighbour[CLUSTER] != 0.0 {
-				continue
-			}
-
 			// Avoid checking distance to self
-			if n == currentPointIdx {
+			if neighbour[CLUSTER] != 0.0 || n == currentPointIdx {
 				continue
 			}
 
@@ -80,11 +75,14 @@ func paintCluster(points []DataPoint, start int, maxDistance float64, minSamples
 			}
 		}
 
+		// Is core point
 		if len(closePoints) >= minSamples {
-			// Is core point
+			// Set the current point clusterId
 			if points[currentPointIdx][CLUSTER] == 0.0 {
 				points[currentPointIdx][CLUSTER] = clusterId
 			}
+
+			// Set close points clusterId
 			for _, closePointIdx := range closePoints {
 				if points[closePointIdx][CLUSTER] == 0.0 {
 					points[closePointIdx][CLUSTER] = clusterId
@@ -102,5 +100,7 @@ func paintCluster(points []DataPoint, start int, maxDistance float64, minSamples
 
 // Calculates the distance between 2 points in 2d space
 func distance(point1, point2 DataPoint) float64 {
-	return math.Abs(math.Sqrt(math.Pow(point2[Y]-point1[Y], 2) + math.Pow(point2[X]-point1[X], 2)))
+	return math.Abs(
+		math.Sqrt(
+			math.Pow(point2[Y]-point1[Y], 2) + math.Pow(point2[X]-point1[X], 2)))
 }
