@@ -31,16 +31,17 @@ func TestDBScan(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		if int(points[testCase[0]][2]) != testCase[1] {
-			t.Errorf("Expected index %d to be cluster %d, got %d", testCase[0], testCase[1], int(points[testCase[0]][2]))
+		if int(points[testCase[0]][CLUSTER]) != testCase[1] {
+			t.Errorf("Expected index %d to be cluster %d, got %d", testCase[0], testCase[1], int(points[testCase[0]][CLUSTER]))
 		}
 	}
 
 	// Debug
-	/*fmt.Println("x,y,clusterId")
-	for _, point := range points {
-		fmt.Printf("%f,%f,%d\n", point[0], point[1], int(point[2]))
-	}
+	/*
+		fmt.Println("x,y,clusterId")
+		for _, point := range points {
+			fmt.Printf("%f,%f,%d\n", point[0], point[1], int(point[2]))
+		}
 	*/
 }
 
@@ -74,17 +75,17 @@ func getData(name string) ([]DataPoint, error) {
 
 		parts := strings.Split(row, ",")
 
-		x, err = strconv.ParseFloat(parts[0], 32)
+		x, err = strconv.ParseFloat(parts[X], 32)
 		if err != nil {
 			return nil, err
 		}
 
-		y, err = strconv.ParseFloat(parts[1], 32)
+		y, err = strconv.ParseFloat(parts[Y], 32)
 		if err != nil {
 			return nil, err
 		}
 
-		category, err = strconv.ParseFloat(parts[2], 32)
+		category, err = strconv.ParseFloat(parts[CLUSTER], 32)
 		if err != nil {
 			return nil, err
 		}
