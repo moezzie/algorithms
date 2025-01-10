@@ -32,13 +32,10 @@ func DBScan(dataPoints []DataPoint, maxDistance float64, minSamples int) []DataP
 
 func paintCluster(points []DataPoint, start int, maxDistance float64, minSamples int, clusterId float64) []DataPoint {
 	stack := make([]int, len(points))
-	// Prefill with -1
-	for n := range stack {
-		stack[n] = -1
-	}
+
 	stack[0] = start
 	currentStackPos := 0
-	lastStackElementPos := 0
+	nextStackElementPos := 1
 
 	var closePoints []int
 	var currentPointIdx int
@@ -46,7 +43,7 @@ func paintCluster(points []DataPoint, start int, maxDistance float64, minSamples
 	visited := make([]int, len(points))
 	visitedPos := 0
 
-	for currentStackPos > -1 && stack[currentStackPos] > -1 && currentStackPos < len(stack) {
+	for currentStackPos < nextStackElementPos {
 
 	CONTINUE_LABEL:
 		currentPointIdx = stack[currentStackPos]
@@ -93,8 +90,8 @@ func paintCluster(points []DataPoint, start int, maxDistance float64, minSamples
 					points[closePointIdx][CLUSTER] = clusterId
 				}
 
-				stack[lastStackElementPos+1] = closePointIdx
-				lastStackElementPos++
+				stack[nextStackElementPos] = closePointIdx
+				nextStackElementPos++
 			}
 		}
 
