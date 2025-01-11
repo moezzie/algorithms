@@ -10,18 +10,18 @@ const (
 
 // This data type holds the following values:
 // x, y, category
-type DataPoint [3]float64
+type DataPoint [3]float32
 
-func DBScan(dataPoints []DataPoint, maxDistance float64, minSamples int) []DataPoint {
-	clusterIds := make([]float64, 0)
-	var clusterId float64
+func DBScan(dataPoints []DataPoint, maxDistance float32, minSamples int) []DataPoint {
+	clusterIds := make([]float32, 0)
+	var clusterId float32
 
 	for n := 0; n < len(dataPoints); n++ {
 		if dataPoints[n][CLUSTER] == 0.0 {
 			continue
 		}
 
-		clusterId = float64(len(clusterIds) + 1)
+		clusterId = float32(len(clusterIds) + 1)
 		clusterIds = append(clusterIds, clusterId)
 
 		dataPoints = paintCluster(dataPoints, n, maxDistance, minSamples, clusterId)
@@ -30,7 +30,7 @@ func DBScan(dataPoints []DataPoint, maxDistance float64, minSamples int) []DataP
 	return dataPoints
 }
 
-func paintCluster(points []DataPoint, start int, maxDistance float64, minSamples int, clusterId float64) []DataPoint {
+func paintCluster(points []DataPoint, start int, maxDistance float32, minSamples int, clusterId float32) []DataPoint {
 	stack := make([]int, len(points))
 	stack[0] = start
 	currentStackPos := 0
@@ -99,8 +99,10 @@ func paintCluster(points []DataPoint, start int, maxDistance float64, minSamples
 }
 
 // Calculates the distance between 2 points in 2d space
-func distance(point1, point2 DataPoint) float64 {
-	return math.Abs(
+func distance(point1, point2 DataPoint) float32 {
+	return float32(math.Abs(
 		math.Sqrt(
-			math.Pow(point2[Y]-point1[Y], 2) + math.Pow(point2[X]-point1[X], 2)))
+			math.Pow(float64(point2[Y]-point1[Y]), 2) + math.Pow(float64(point2[X]-point1[X]), 2),
+			// float64(((point2[Y] - point1[Y]) * (point2[Y] - point1[Y])) + ((point2[X] - point1[X]) * (point2[X] - point1[X]))),
+		)))
 }

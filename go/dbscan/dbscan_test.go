@@ -8,7 +8,7 @@ import (
 )
 
 func TestDBScan(t *testing.T) {
-	maxDistance := float64(2.0)
+	maxDistance := float32(2.0)
 	minSamples := 3
 	data, err := getData("2d-10c")
 	if err != nil {
@@ -46,7 +46,7 @@ func TestDBScan(t *testing.T) {
 }
 
 func BenchmarkDBScanSimple(b *testing.B) {
-	maxDistance := float64(2.0)
+	maxDistance := float32(2.0)
 	minSamples := 3
 	data, _ := getData("2d-10c")
 
@@ -69,7 +69,7 @@ func getData(name string) ([]DataPoint, error) {
 	y := 0.0
 	category := 0.0
 	for idx, row := range rows {
-		if row == "" {
+		if len(row) == 0 {
 			continue
 		}
 
@@ -90,7 +90,7 @@ func getData(name string) ([]DataPoint, error) {
 			return nil, err
 		}
 
-		points[idx] = DataPoint{float64(x), float64(y), float64(category)}
+		points[idx] = DataPoint{float32(x), float32(y), float32(category)}
 	}
 
 	return points, nil
