@@ -1,11 +1,15 @@
 package dbscan
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 const (
-	X       = 0
-	Y       = 1
-	CLUSTER = 2
+	CLUSTER_NOT_SET = -1.0
+	X               = 0
+	Y               = 1
+	CLUSTER         = 2
 )
 
 // This data type holds the following values:
@@ -14,10 +18,10 @@ type DataPoint [3]float32
 
 func DBScan(dataPoints []DataPoint, maxDistance float32, minSamples int) []DataPoint {
 	clusterIds := make([]float32, 0)
-	var clusterId float32
+	var clusterId float32 = 0.0
 
 	for n := 0; n < len(dataPoints); n++ {
-		if dataPoints[n][CLUSTER] == 0.0 {
+		if dataPoints[n][CLUSTER] > CLUSTER_NOT_SET {
 			continue
 		}
 
@@ -25,6 +29,7 @@ func DBScan(dataPoints []DataPoint, maxDistance float32, minSamples int) []DataP
 		clusterIds = append(clusterIds, clusterId)
 
 		dataPoints = paintCluster(dataPoints, n, maxDistance, minSamples, clusterId)
+
 	}
 
 	return dataPoints
@@ -64,12 +69,14 @@ func paintCluster(points []DataPoint, start int, maxDistance float32, minSamples
 
 			// Avoid nodes that already have a category set
 			// Avoid checking distance to self
-			if neighbour[CLUSTER] != 0.0 || n == currentPointIdx {
+			if neighbour[CLUSTER] > CLUSTER_NOT_SET || n == currentPointIdx {
 				continue
 			}
 
+			dist := distance(points[currentPointIdx], neighbour)
+
 			// Check distance to neighbour
-			if distance(points[currentPointIdx], neighbour) <= maxDistance {
+			if dist < maxDistance {
 				// If it is close enough view it as a 'close point'
 				closePoints = append(closePoints, n)
 			}
@@ -77,14 +84,15 @@ func paintCluster(points []DataPoint, start int, maxDistance float32, minSamples
 
 		// Is core point
 		if len(closePoints) >= minSamples {
+			fmt.Println("Core point")
 			// Set the current point clusterId
-			if points[currentPointIdx][CLUSTER] == 0.0 {
+			if int8(points[currentPointIdx][CLUSTER]) == int8(CLUSTER_NOT_SET) {
 				points[currentPointIdx][CLUSTER] = clusterId
 			}
 
 			// Set close points clusterId
 			for _, closePointIdx := range closePoints {
-				if points[closePointIdx][CLUSTER] == 0.0 {
+				if int8(points[closePointIdx][CLUSTER]) == int8(CLUSTER_NOT_SET) {
 					points[closePointIdx][CLUSTER] = clusterId
 				}
 
@@ -102,7 +110,6 @@ func paintCluster(points []DataPoint, start int, maxDistance float32, minSamples
 func distance(point1, point2 DataPoint) float32 {
 	return float32(math.Abs(
 		math.Sqrt(
-			math.Pow(float64(point2[Y]-point1[Y]), 2) + math.Pow(float64(point2[X]-point1[X]), 2),
-			// float64(((point2[Y] - point1[Y]) * (point2[Y] - point1[Y])) + ((point2[X] - point1[X]) * (point2[X] - point1[X]))),
+			float64(((point2[Y] - point1[Y]) * (point2[Y] - point1[Y])) + ((point2[X] - point1[X]) * (point2[X] - point1[X]))),
 		)))
 }
