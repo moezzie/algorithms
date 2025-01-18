@@ -31,10 +31,12 @@ func TestDBScan(t *testing.T) {
 		t.Errorf("%d / %d failed", numErrors, len(points))
 	}
 
-	clusters := getLabelsInts(points)
-	for idx, label := range labels {
-		fmt.Println(clusters[idx], label)
-	}
+	/*
+		clusters := getLabelsInts(points)
+		for idx, label := range labels {
+			fmt.Println(clusters[idx], label)
+		}
+	*/
 
 	writeToCsv(points)
 }
@@ -82,7 +84,17 @@ func TestPrintPoints(t *testing.T) {
 	}
 }
 
-func BenchmarkDBScanSimple(b *testing.B) {
+func BenchmarkDBScan_Unoptimised(b *testing.B) {
+	maxDistance := float32(2.0)
+	minSamples := 3
+	data, _ := getData("2d-10c")
+
+	for n := 0; n < b.N; n++ {
+		DBScan(data, maxDistance, minSamples)
+	}
+}
+
+func BenchmarkDBScan_(b *testing.B) {
 	maxDistance := float32(2.0)
 	minSamples := 3
 	data, _ := getData("2d-10c")
@@ -231,19 +243,21 @@ func findAllSimilar(points []DataPoint, labels []int, t *testing.T) int {
 func compareClusters(actual []int, expected []int, t *testing.T) int {
 	failures := make([]int, 0)
 
+	var val bool
 	checked := make(map[int]bool, 0)
+
 	for n := 0; n < len(expected); n++ {
-		if val, _ := checked[expected[n]]; val {
+		if val = checked[expected[n]]; val {
 			continue
 		}
 
-		for x := 0; x < len(expected); x++ {
-			if expected[n] == expected[x] && actual[n] != actual[x] {
+		for x := n; x < len(expected); x++ {
+			if actual[n] < 0 || (expected[n] == expected[x] && actual[n] != actual[x]) {
 				failures = append(failures, x)
+				n = x
 				break
 			}
 		}
-
 		checked[n] = true
 	}
 

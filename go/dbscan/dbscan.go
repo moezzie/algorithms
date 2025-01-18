@@ -1,7 +1,6 @@
 package dbscan
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -84,7 +83,6 @@ func paintCluster(points []DataPoint, start int, maxDistance float32, minSamples
 
 		// Is core point
 		if len(closePoints) >= minSamples {
-			fmt.Println("Core point")
 			// Set the current point clusterId
 			if int8(points[currentPointIdx][CLUSTER]) == int8(CLUSTER_NOT_SET) {
 				points[currentPointIdx][CLUSTER] = clusterId
